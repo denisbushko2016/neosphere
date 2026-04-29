@@ -1,0 +1,86 @@
+import csv
+from datetime import datetime
+from pathlib import Path
+
+import streamlit as st
+
+
+# =========================
+# ДОСТУП ПО ПАРОЛЮ
+# =========================
+
+PASSWORD = "NEO-2026"  # потом можно заменить на другой код доступа
+
+
+def check_password():
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+
+    if st.session_state.authenticated:
+        return True
+
+    st.set_page_config(page_title="NeoSphere Access", layout="centered")
+
+    st.title("NeoSphere Access")
+    st.subheader("Система управления состоянием")
+
+    password = st.text_input("Введите код доступа", type="password")
+
+    if st.button("Войти"):
+        if password == PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Неверный код доступа")
+
+    return False
+
+
+if not check_password():
+    st.stop()
+
+
+# =========================
+# ОСНОВНЫЕ НАСТРОЙКИ
+# =========================
+
+ROOT = Path(__file__).resolve().parents[1]
+VIDEO_DIR = ROOT / "output" / "video"
+DATA_DIR = ROOT / "data"
+LOG_FILE = DATA_DIR / "session_log.csv"
+
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+
+st.title("NeoSphere")
+st.subheader("Управляй состоянием. Управляй результатом.")
+
+st.markdown("""
+NeoSphere — система управления состоянием через аудиовизуальные протоколы.
+
+Выберите текущее состояние. Система подберёт протокол и адаптирует следующий шаг по вашей реакции.
+""")
+
+
+# =========================
+# RESET
+# =========================
+
+RESET_SESSIONS = [
+    {
+        "state": "Лёгкий перегруз / внутренний шум",
+        "title": "Reset 01 — Мягкое обнуление",
+        "description": "Мягкое снижение внутреннего шума и подготовка к дальнейшей работе.",
+        "file": "NeoSphere_Reset_01_FULL.mp4",
+    },
+    {
+        "state": "Сильный перегруз / напряжение",
+        "title": "Reset 02 — Глубокое обнуление",
+        "description": "Глубокое завораживающее снижение перегрузки.",
+        "file": "NeoSphere_Reset_02_v1_FULL.mp4",
+    },
+    {
+        "state": "Усталость / нужно восстановиться",
+        "title": "Reset 03 — Восстановительное обнуление",
+        "description": "Мягкое расслабленное восстановление и снижение активности.",
+л

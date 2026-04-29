@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.mp4
+*.wav
+output/
+data/session_log.csv
+interface/app.py.save
