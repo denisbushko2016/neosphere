@@ -70,19 +70,19 @@ RESET_SESSIONS = [
         "state": "Лёгкий перегруз / внутренний шум",
         "title": "Reset 01 — Мягкое обнуление",
         "description": "Мягкое снижение внутреннего шума и подготовка к дальнейшей работе.",
-        "url": "https://drive.google.com/uc?export=download&id=1XQHVjSdVOcXGq70N2wo733xVip0cbgbu",
+        "url": "https://drive.google.com/file/d/1XQHVjSdVOcXGq70N2wo733xVip0cbgbu/preview",
     },
     {
         "state": "Сильный перегруз / напряжение",
         "title": "Reset 02 — Глубокое обнуление",
         "description": "Глубокое завораживающее снижение перегрузки.",
-        "url": "https://drive.google.com/uc?export=download&id=1Al1sv5vzf4eEIAcgAQFZYMwTKBZqCiS6",
+        "url": "https://drive.google.com/file/d/1Al1sv5vzf4eEIAcgAQFZYMwTKBZqCiS6/preview",
     },
     {
         "state": "Усталость / нужно восстановиться",
         "title": "Reset 03 — Восстановительное обнуление",
         "description": "Мягкое расслабленное восстановление и снижение активности.",
-        "url": "https://drive.google.com/uc?export=download&id=1KwVQ836RK_pFPMt7LUkk8OX6yV8TXPlW",
+        "url": "https://drive.google.com/file/d/1KwVQ836RK_pFPMt7LUkk8OX6yV8TXPlW/preview",
     },
 ]
 
@@ -96,31 +96,31 @@ ARCHITECT_SESSIONS = [
         "state": "Мысли разбросаны",
         "title": "Architect 01 — Structure",
         "description": "Разложить мысли и создать поле структуры.",
-        "url": "https://drive.google.com/uc?export=download&id=1AtQbr0wpTAzcPr9RWoKc1puXnINLy_os",
+        "url": "https://drive.google.com/file/d/1AtQbr0wpTAzcPr9RWoKc1puXnINLy_os/preview",
     },
     {
         "state": "Не могу выбрать главное",
         "title": "Architect 02 — Select",
         "description": "Выделить главное и убрать лишнее.",
-        "url": "https://drive.google.com/uc?export=download&id=1T059GG3UYuhYKDuuooUbJsXU8xi2DGYX",
+        "url": "https://drive.google.com/file/d/1T059GG3UYuhYKDuuooUbJsXU8xi2DGYX/preview",
     },
     {
         "state": "Не могу удержать внимание",
         "title": "Architect 03 — Focus",
         "description": "Удержать внимание на выбранном объекте.",
-        "url": "https://drive.google.com/uc?export=download&id=1tpV5mc85ekUybhG5xw3EkTcQsquR3Rj5",
+        "url": "https://drive.google.com/file/d/1tpV5mc85ekUybhG5xw3EkTcQsquR3Rj5/preview",
     },
     {
         "state": "Мешают эмоции",
         "title": "Architect 04 — Cold Mode",
         "description": "Холодная ясность и снижение эмоционального шума.",
-        "url": "https://drive.google.com/uc?export=download&id=1D_Uyo5COFwiNruXH1B5Ir3XN0vwsc3BA",
+        "url": "https://drive.google.com/file/d/1D_Uyo5COFwiNruXH1B5Ir3XN0vwsc3BA/preview",
     },
     {
         "state": "Нужно перейти к действию",
         "title": "Architect 05 — Action",
         "description": "Переход к действию и включение импульса.",
-        "url": "https://drive.google.com/uc?export=download&id=1NJ_f9dorzVgEhKkEAqhD_qyngJFPcbY-",
+        "url": "https://drive.google.com/file/d/1NJ_f9dorzVgEhKkEAqhD_qyngJFPcbY-/preview",
     },
 ]
 
@@ -134,19 +134,19 @@ DREAM_SESSIONS = [
         "state": "Не могу отключиться и уснуть",
         "title": "Dream 01 — Продавец снов",
         "description": "Мягкий вход в сон и появление образного поля.",
-        "url": "https://drive.google.com/uc?export=download&id=1R-i8knbt_gFn6pGcBb_Bab4gMwcyD1m1",
+        "url": "https://drive.google.com/file/d/1R-i8knbt_gFn6pGcBb_Bab4gMwcyD1m1/preview",
     },
     {
         "state": "Нужно глубже погрузиться в сон",
         "title": "Dream 02 — Углубление сна",
         "description": "Углубление сонного состояния.",
-        "url": "https://drive.google.com/uc?export=download&id=1jwrNTGwBT-yJKBbAB7igglfwgqYU8UmX",
+        "url": "https://drive.google.com/file/d/1jwrNTGwBT-yJKBbAB7igglfwgqYU8UmX/preview",
     },
     {
         "state": "Нужно удержать сонное состояние",
         "title": "Dream 03 — Стабилизация сна",
         "description": "Удержание сна, снижение активности и затемнение восприятия.",
-        "url": "https://drive.google.com/uc?export=download&id=1MweML-ABNb4Ljy-tcSlzmvR4EDdaF3ih",
+        "url": "https://drive.google.com/file/d/1MweML-ABNb4Ljy-tcSlzmvR4EDdaF3ih/preview",
     },
 ]
 
@@ -346,7 +346,7 @@ else:
     st.write("3. Не используйте при управлении техникой")
     st.write("4. При дискомфорте остановите сессию")
 
-    st.video(video_url)
+    st.components.v1.iframe(video_url, height=720)
 
     result = st.radio(
         "Что изменилось?",
