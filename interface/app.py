@@ -9,7 +9,7 @@ import streamlit as st
 # ДОСТУП ПО ПАРОЛЮ
 # =========================
 
-PASSWORD = "NEO-2026"  # потом можно заменить на другой код доступа
+PASSWORD = "NEO-2026"
 
 
 def check_password():
@@ -45,7 +45,6 @@ if not check_password():
 # =========================
 
 ROOT = Path(__file__).resolve().parents[1]
-VIDEO_DIR = ROOT / "output" / "video"
 DATA_DIR = ROOT / "data"
 LOG_FILE = DATA_DIR / "session_log.csv"
 
@@ -71,19 +70,19 @@ RESET_SESSIONS = [
         "state": "Лёгкий перегруз / внутренний шум",
         "title": "Reset 01 — Мягкое обнуление",
         "description": "Мягкое снижение внутреннего шума и подготовка к дальнейшей работе.",
-        "file": "NeoSphere_Reset_01_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1XQHVjSdVOcXGq70N2wo733xVip0cbgbu",
     },
     {
         "state": "Сильный перегруз / напряжение",
         "title": "Reset 02 — Глубокое обнуление",
         "description": "Глубокое завораживающее снижение перегрузки.",
-        "file": "NeoSphere_Reset_02_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1Al1sv5vzf4eEIAcgAQFZYMwTKBZqCiS6",
     },
     {
         "state": "Усталость / нужно восстановиться",
         "title": "Reset 03 — Восстановительное обнуление",
         "description": "Мягкое расслабленное восстановление и снижение активности.",
-        "file": "NeoSphere_Reset_03_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1KwVQ836RK_pFPMt7LUkk8OX6yV8TXPlW",
     },
 ]
 
@@ -97,31 +96,31 @@ ARCHITECT_SESSIONS = [
         "state": "Мысли разбросаны",
         "title": "Architect 01 — Structure",
         "description": "Разложить мысли и создать поле структуры.",
-        "file": "NeoSphere_Architect_01_v2_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1AtQbr0wpTAzcPr9RWoKc1puXnINLy_os",
     },
     {
         "state": "Не могу выбрать главное",
         "title": "Architect 02 — Select",
         "description": "Выделить главное и убрать лишнее.",
-        "file": "NeoSphere_Architect_02_v4_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1T059GG3UYuhYKDuuooUbJsXU8xi2DGYX",
     },
     {
         "state": "Не могу удержать внимание",
         "title": "Architect 03 — Focus",
         "description": "Удержать внимание на выбранном объекте.",
-        "file": "NeoSphere_Architect_03_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1tpV5mc85ekUybhG5xw3EkTcQsquR3Rj5",
     },
     {
         "state": "Мешают эмоции",
         "title": "Architect 04 — Cold Mode",
         "description": "Холодная ясность и снижение эмоционального шума.",
-        "file": "NeoSphere_Architect_04_v2_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1D_Uyo5COFwiNruXH1B5Ir3XN0vwsc3BA",
     },
     {
         "state": "Нужно перейти к действию",
         "title": "Architect 05 — Action",
         "description": "Переход к действию и включение импульса.",
-        "file": "NeoSphere_Architect_05_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1NJ_f9dorzVgEhKkEAqhD_qyngJFPcbY-",
     },
 ]
 
@@ -135,19 +134,19 @@ DREAM_SESSIONS = [
         "state": "Не могу отключиться и уснуть",
         "title": "Dream 01 — Продавец снов",
         "description": "Мягкий вход в сон и появление образного поля.",
-        "file": "NeoSphere_Dream_01_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1R-i8knbt_gFn6pGcBb_Bab4gMwcyD1m1",
     },
     {
         "state": "Нужно глубже погрузиться в сон",
         "title": "Dream 02 — Углубление сна",
         "description": "Углубление сонного состояния.",
-        "file": "NeoSphere_Dream_02_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1jwrNTGwBT-yJKBbAB7igglfwgqYU8UmX",
     },
     {
         "state": "Нужно удержать сонное состояние",
         "title": "Dream 03 — Стабилизация сна",
         "description": "Удержание сна, снижение активности и затемнение восприятия.",
-        "file": "NeoSphere_Dream_03_v1_FULL.mp4",
+        "url": "https://drive.google.com/uc?export=download&id=1MweML-ABNb4Ljy-tcSlzmvR4EDdaF3ih",
     },
 ]
 
@@ -331,7 +330,7 @@ if step >= len(protocol):
 
 else:
     item = protocol[step]
-    file_path = VIDEO_DIR / item["file"]
+    video_url = item["url"]
 
     st.markdown(f"## Шаг {step + 1} из {len(protocol)}")
     st.markdown("### Ваше состояние")
@@ -347,10 +346,7 @@ else:
     st.write("3. Не используйте при управлении техникой")
     st.write("4. При дискомфорте остановите сессию")
 
-    if file_path.exists():
-        st.video(str(file_path))
-    else:
-        st.error(f"Файл не найден: {file_path}")
+    st.video(video_url)
 
     result = st.radio(
         "Что изменилось?",
