@@ -5,9 +5,9 @@ from pathlib import Path
 import streamlit as st
 
 
-# =========================
-# ДОСТУП ПО ПАРОЛЮ
-# =========================
+# =====================================================
+# ДОСТУП
+# =====================================================
 
 PASSWORD = "NEO-2026"
 
@@ -19,12 +19,18 @@ def check_password():
     if st.session_state.authenticated:
         return True
 
-    st.set_page_config(page_title="NeoSphere Access", layout="centered")
+    st.set_page_config(
+        page_title="NeoSphere",
+        layout="wide"
+    )
 
     st.title("NeoSphere Access")
     st.subheader("Система управления состоянием")
 
-    password = st.text_input("Введите код доступа", type="password")
+    password = st.text_input(
+        "Введите код доступа",
+        type="password"
+    )
 
     if st.button("Войти"):
         if password == PASSWORD:
@@ -40,100 +46,111 @@ if not check_password():
     st.stop()
 
 
-# =========================
-# ОСНОВНЫЕ НАСТРОЙКИ
-# =========================
+# =====================================================
+# PATHS
+# =====================================================
 
 ROOT = Path(__file__).resolve().parents[1]
+
 DATA_DIR = ROOT / "data"
 LOG_FILE = DATA_DIR / "session_log.csv"
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
+# =====================================================
+# UI
+# =====================================================
+
 st.title("NeoSphere")
 st.subheader("Управляй состоянием. Управляй результатом.")
 
 st.markdown("""
-NeoSphere — система управления состоянием через аудиовизуальные протоколы.
+NeoSphere — система аудиовизуальных протоколов
+для управления внутренним состоянием.
 
-Выберите текущее состояние. Система подберёт протокол и адаптирует следующий шаг по вашей реакции.
+Система помогает:
+
+- снижать внутренний шум
+- структурировать мышление
+- усиливать концентрацию
+- переходить в режим восстановления и сна
 """)
 
 
-# =========================
+# =====================================================
 # RESET
-# =========================
+# =====================================================
 
 RESET_SESSIONS = [
     {
         "state": "Лёгкий перегруз / внутренний шум",
         "title": "Reset 01 — Мягкое обнуление",
-        "description": "Мягкое снижение внутреннего шума и подготовка к дальнейшей работе.",
+        "description": "Мягкое снижение внутреннего шума.",
         "url": "https://drive.google.com/file/d/1XQHVjSdVOcXGq70N2wo733xVip0cbgbu/preview",
     },
     {
         "state": "Сильный перегруз / напряжение",
         "title": "Reset 02 — Глубокое обнуление",
-        "description": "Глубокое завораживающее снижение перегрузки.",
+        "description": "Глубокое снижение перегрузки.",
         "url": "https://drive.google.com/file/d/1Al1sv5vzf4eEIAcgAQFZYMwTKBZqCiS6/preview",
     },
     {
         "state": "Усталость / нужно восстановиться",
-        "title": "Reset 03 — Восстановительное обнуление",
-        "description": "Мягкое расслабленное восстановление и снижение активности.",
+        "title": "Reset 03 — Восстановление",
+        "description": "Мягкое восстановление и расслабление.",
         "url": "https://drive.google.com/file/d/1KwVQ836RK_pFPMt7LUkk8OX6yV8TXPlW/preview",
     },
 ]
 
 
-# =========================
+# =====================================================
 # ARCHITECT
-# =========================
+# =====================================================
 
 ARCHITECT_SESSIONS = [
     {
         "state": "Мысли разбросаны",
         "title": "Architect 01 — Structure",
-        "description": "Разложить мысли и создать поле структуры.",
+        "description": "Создание внутренней структуры.",
         "url": "https://drive.google.com/file/d/1AtQbr0wpTAzcPr9RWoKc1puXnINLy_os/preview",
     },
     {
         "state": "Не могу выбрать главное",
         "title": "Architect 02 — Select",
-        "description": "Выделить главное и убрать лишнее.",
+        "description": "Выделение главного.",
         "url": "https://drive.google.com/file/d/1T059GG3UYuhYKDuuooUbJsXU8xi2DGYX/preview",
     },
     {
         "state": "Не могу удержать внимание",
         "title": "Architect 03 — Focus",
-        "description": "Удержать внимание на выбранном объекте.",
+        "description": "Удержание внимания.",
         "url": "https://drive.google.com/file/d/1tpV5mc85ekUybhG5xw3EkTcQsquR3Rj5/preview",
     },
     {
         "state": "Мешают эмоции",
         "title": "Architect 04 — Cold Mode",
-        "description": "Холодная ясность и снижение эмоционального шума.",
+        "description": "Снижение эмоционального шума.",
         "url": "https://drive.google.com/file/d/1D_Uyo5COFwiNruXH1B5Ir3XN0vwsc3BA/preview",
     },
     {
         "state": "Нужно перейти к действию",
         "title": "Architect 05 — Action",
-        "description": "Переход к действию и включение импульса.",
-        "url": "https://drive.google.com/file/d/1NJ_f9dorzVgEhKkEAqhD_qyngJFPcbY-/preview",
+        "description": "Импульс к действию.",
+        "url": "https://drive.google.com/file/d/1SPJi1qoio57GkYjT5py2s1VdGEPNTF11/preview",
     },
 ]
 
 
-# =========================
+# =====================================================
 # DREAM
-# =========================
+# =====================================================
 
 DREAM_SESSIONS = [
     {
         "state": "Не могу отключиться и уснуть",
         "title": "Dream 01 — Продавец снов",
-        "description": "Мягкий вход в сон и появление образного поля.",
+        "description": "Мягкий вход в сон.",
         "url": "https://drive.google.com/file/d/1R-i8knbt_gFn6pGcBb_Bab4gMwcyD1m1/preview",
     },
     {
@@ -145,15 +162,15 @@ DREAM_SESSIONS = [
     {
         "state": "Нужно удержать сонное состояние",
         "title": "Dream 03 — Стабилизация сна",
-        "description": "Удержание сна, снижение активности и затемнение восприятия.",
+        "description": "Удержание сонного состояния.",
         "url": "https://drive.google.com/file/d/1MweML-ABNb4Ljy-tcSlzmvR4EDdaF3ih/preview",
     },
 ]
 
 
-# =========================
+# =====================================================
 # ПРОТОКОЛЫ
-# =========================
+# =====================================================
 
 FULL_PROTOCOL = [
     RESET_SESSIONS[0],
@@ -168,107 +185,29 @@ FULL_PROTOCOL = [
 REQUESTS = {
     "Полный цикл NeoSphere": FULL_PROTOCOL,
 
-    "Лёгкий перегруз / внутренний шум": [RESET_SESSIONS[0]] + ARCHITECT_SESSIONS,
-    "Сильный перегруз / напряжение": [RESET_SESSIONS[1]],
-    "Усталость / нужно восстановиться": [RESET_SESSIONS[2]],
-
-    "Мысли разбросаны": ARCHITECT_SESSIONS,
-    "Не могу выбрать главное": ARCHITECT_SESSIONS[1:],
-    "Не могу удержать внимание": ARCHITECT_SESSIONS[2:],
-    "Мешают эмоции": ARCHITECT_SESSIONS[3:],
-    "Нужно перейти к действию": ARCHITECT_SESSIONS[4:],
-
-    "Не могу отключиться и уснуть": DREAM_SESSIONS,
-    "Нужно глубже погрузиться в сон": DREAM_SESSIONS[1:],
-    "Нужно удержать сонное состояние": DREAM_SESSIONS[2:],
-
     "Только Reset": RESET_SESSIONS,
     "Только Architect": ARCHITECT_SESSIONS,
     "Только Dream": DREAM_SESSIONS,
+
+    "Лёгкий перегруз / внутренний шум": [RESET_SESSIONS[0]],
+    "Сильный перегруз / напряжение": [RESET_SESSIONS[1]],
+    "Усталость / нужно восстановиться": [RESET_SESSIONS[2]],
+
+    "Мысли разбросаны": [ARCHITECT_SESSIONS[0]],
+    "Не могу выбрать главное": [ARCHITECT_SESSIONS[1]],
+    "Не могу удержать внимание": [ARCHITECT_SESSIONS[2]],
+    "Мешают эмоции": [ARCHITECT_SESSIONS[3]],
+    "Нужно перейти к действию": [ARCHITECT_SESSIONS[4]],
+
+    "Не могу отключиться и уснуть": [DREAM_SESSIONS[0]],
+    "Нужно глубже погрузиться в сон": [DREAM_SESSIONS[1]],
+    "Нужно удержать сонное состояние": [DREAM_SESSIONS[2]],
 }
 
 
-POSITIVE_RESULTS = [
-    "Стало спокойнее",
-    "Появилась структура",
-    "Удалось выбрать главное",
-    "Фокус усилился",
-    "Появилась холодная ясность",
-    "Появился импульс к действию",
-    "Появилась сонливость / расслабление",
-    "Стало глубже",
-]
-
-NEUTRAL_RESULTS = ["Не почувствовал изменений"]
-NEGATIVE_RESULTS = ["Появился дискомфорт"]
-
-
-def save_log(request, session_title, state, result, action):
-    file_exists = LOG_FILE.exists()
-
-    with LOG_FILE.open("a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-
-        if not file_exists:
-            writer.writerow(
-                ["datetime", "request", "session", "state", "result", "action"]
-            )
-
-        writer.writerow(
-            [
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                request,
-                session_title,
-                state,
-                result,
-                action,
-            ]
-        )
-
-
-def reset_protocol():
-    st.session_state.step = 0
-    st.session_state.history = []
-    st.session_state.repeat_count = 0
-    st.rerun()
-
-
-def analyze_final_state():
-    history = st.session_state.history
-
-    positive = sum(
-        1 for h in history if any(p in h["result"] for p in POSITIVE_RESULTS)
-    )
-    neutral = sum(1 for h in history if "Не почувствовал" in h["result"])
-    negative = sum(1 for h in history if "дискомфорт" in h["result"].lower())
-
-    if negative > 0:
-        return (
-            "negative",
-            "Обнаружен дискомфорт. Рекомендуется вернуться к Reset или остановить протокол.",
-        )
-
-    if positive >= max(1, len(history) / 2):
-        return (
-            "positive",
-            "Состояние изменилось. Протокол можно считать результативным.",
-        )
-
-    if neutral > 0:
-        return (
-            "neutral",
-            "Результат частичный. Рекомендуется повторить протокол или выбрать более мягкий вход.",
-        )
-
-    return (
-        "neutral",
-        "Состояние изменилось, но требует дополнительной работы.",
-    )
-
-
-# =========================
-# SESSION STATE
-# =========================
+# =====================================================
+# STATE
+# =====================================================
 
 if "active_request" not in st.session_state:
     st.session_state.active_request = None
@@ -276,191 +215,130 @@ if "active_request" not in st.session_state:
 if "step" not in st.session_state:
     st.session_state.step = 0
 
-if "history" not in st.session_state:
-    st.session_state.history = []
 
-if "repeat_count" not in st.session_state:
-    st.session_state.repeat_count = 0
+# =====================================================
+# FUNCTIONS
+# =====================================================
+
+def save_log(request_name, session_name):
+    file_exists = LOG_FILE.exists()
+
+    with LOG_FILE.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+
+        if not file_exists:
+            writer.writerow([
+                "datetime",
+                "request",
+                "session"
+            ])
+
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            request_name,
+            session_name
+        ])
 
 
-# =========================
-# ИНТЕРФЕЙС
-# =========================
+def reset_protocol():
+    st.session_state.step = 0
+    st.rerun()
+
+
+# =====================================================
+# INTERFACE
+# =====================================================
 
 st.divider()
 
-request = st.radio("Что сейчас мешает?", list(REQUESTS.keys()))
+request = st.radio(
+    "Что сейчас мешает?",
+    list(REQUESTS.keys())
+)
 
 if st.session_state.active_request != request:
     st.session_state.active_request = request
     st.session_state.step = 0
-    st.session_state.history = []
-    st.session_state.repeat_count = 0
 
 protocol = REQUESTS[request]
 step = st.session_state.step
 
 st.divider()
 
-
 if step >= len(protocol):
+
     st.success("Протокол завершён.")
 
-    st.markdown("### Итоги прохождения")
-
-    if st.session_state.history:
-        for item in st.session_state.history:
-            st.write(f"**{item['session']}** — {item['result']}")
-    else:
-        st.write("Ответы пока не зафиксированы.")
-
-    status, message = analyze_final_state()
-
-    st.markdown("### Итоговое состояние")
-
-    if status == "positive":
-        st.success(message)
-    elif status == "negative":
-        st.error(message)
-    else:
-        st.warning(message)
-
-    if st.button("Повторить протокол"):
+    if st.button("Пройти снова"):
         reset_protocol()
 
 else:
+
     item = protocol[step]
-    video_url = item["url"]
 
     st.markdown(f"## Шаг {step + 1} из {len(protocol)}")
+
     st.markdown("### Ваше состояние")
     st.write(item["state"])
 
     st.markdown("### Рекомендуемая сессия")
     st.write(f"**{item['title']}**")
+
     st.write(item["description"])
 
     st.markdown("### Как использовать")
-    st.write("1. Используйте наушники")
-    st.write("2. Не отвлекайтесь")
-    st.write("3. Не используйте при управлении техникой")
-    st.write("4. При дискомфорте остановите сессию")
 
-    st.components.v1.iframe(video_url, height=720)
-
-    result = st.radio(
-        "Что изменилось?",
-        [
-            "Пока не проходил",
-            "Стало спокойнее",
-            "Появилась структура",
-            "Удалось выбрать главное",
-            "Фокус усилился",
-            "Появилась холодная ясность",
-            "Появился импульс к действию",
-            "Появилась сонливость / расслабление",
-            "Стало глубже",
-            "Не почувствовал изменений",
-            "Появился дискомфорт",
-        ],
-    )
-
-    if result in POSITIVE_RESULTS:
-        st.success("Состояние изменилось. Рекомендуется перейти к следующему шагу.")
-        action = "next"
-
-    elif result in NEUTRAL_RESULTS:
-        if st.session_state.repeat_count == 0:
-            st.warning("Эффект не зафиксирован. Рекомендуется повторить текущую сессию один раз.")
-            action = "repeat"
-        else:
-            st.warning("Повтор уже был. Рекомендуется перейти к следующему шагу.")
-            action = "next"
-
-    elif result in NEGATIVE_RESULTS:
-        st.error("Появился дискомфорт. Рекомендуется вернуться к Reset или остановить протокол.")
-        action = "reset_or_stop"
-
-    else:
-        action = None
-
-    if result != "Пока не проходил":
-        if action == "next":
-            if st.button("Продолжить"):
-                save_log(request, item["title"], item["state"], result, "next")
-                st.session_state.history.append(
-                    {
-                        "session": item["title"],
-                        "state": item["state"],
-                        "result": result,
-                    }
-                )
-                st.session_state.step += 1
-                st.session_state.repeat_count = 0
-                st.rerun()
-
-        elif action == "repeat":
-            if st.button("Повторить"):
-                save_log(request, item["title"], item["state"], result, "repeat")
-                st.session_state.history.append(
-                    {
-                        "session": item["title"],
-                        "state": item["state"],
-                        "result": result + " → повтор",
-                    }
-                )
-                st.session_state.repeat_count += 1
-                st.rerun()
-
-        elif action == "reset_or_stop":
-            col1, col2 = st.columns(2)
-
-            with col1:
-                if st.button("Вернуться к Reset"):
-                    save_log(request, item["title"], item["state"], result, "return_to_reset")
-                    st.session_state.history.append(
-                        {
-                            "session": item["title"],
-                            "state": item["state"],
-                            "result": result + " → возврат к Reset",
-                        }
-                    )
-                    st.session_state.step = 0
-                    st.session_state.repeat_count = 0
-                    st.rerun()
-
-            with col2:
-                if st.button("Остановить протокол"):
-                    save_log(request, item["title"], item["state"], result, "stop")
-                    st.session_state.history.append(
-                        {
-                            "session": item["title"],
-                            "state": item["state"],
-                            "result": result + " → остановка",
-                        }
-                    )
-                    st.session_state.step = len(protocol)
-                    st.session_state.repeat_count = 0
-                    st.rerun()
+    st.write("• Используйте наушники")
+    st.write("• Не отвлекайтесь")
+    st.write("• Не используйте при управлении техникой")
+    st.write("• При дискомфорте остановите сессию")
 
     st.divider()
+
+    st.components.v1.iframe(
+        item["url"],
+        height=720
+    )
+
+    st.divider()
+
+    if st.button("Следующий шаг"):
+
+        save_log(
+            request,
+            item["title"]
+        )
+
+        st.session_state.step += 1
+        st.rerun()
 
     if st.button("Сбросить протокол"):
         reset_protocol()
 
 
-# =========================
-# ЖУРНАЛ
-# =========================
+# =====================================================
+# LOG
+# =====================================================
 
 st.divider()
 
 with st.expander("Журнал прохождения"):
+
     if LOG_FILE.exists():
-        st.write(f"Файл журнала: `{LOG_FILE}`")
-        st.dataframe(
-            list(csv.DictReader(LOG_FILE.open("r", encoding="utf-8"))),
-            use_container_width=True,
+
+        rows = list(
+            csv.DictReader(
+                LOG_FILE.open(
+                    "r",
+                    encoding="utf-8"
+                )
+            )
         )
+
+        st.dataframe(
+            rows,
+            use_container_width=True
+        )
+
     else:
         st.write("Журнал пока пуст.")
