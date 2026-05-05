@@ -131,7 +131,7 @@ ARCHITECT_SESSIONS = [
         "state": "Мешают эмоции",
         "title": "Architect 04 — Cold Mode",
         "description": "Снижение эмоционального шума.",
-        "url": "https://drive.google.com/file/d/1D_Uyo5COFwiNruXH1B5Ir3XN0vwsc3BA/preview",
+        "url": "https://drive.google.com/file/d/1rcwyFIEZyDIJJA9aZLDpftcQy4V_BEWj/preview",
     },
     {
         "state": "Нужно перейти к действию",
