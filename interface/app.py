@@ -23,6 +23,7 @@ ACCESS_FILE = DATA_DIR / "access_codes.csv"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ACCESS_DAYS = 30
+ACCESS_BUY_URL = "https://t.me/DenisBushko"
 
 
 # =====================================================
@@ -242,6 +243,12 @@ def check_access():
         """,
         unsafe_allow_html=True,
     )
+
+    st.markdown("### Доступ на 30 дней")
+    st.write("Стоимость доступа: **$7**")
+    st.write("После оплаты вы получите персональный код доступа.")
+
+    st.link_button("Получить доступ", ACCESS_BUY_URL)
 
     access_code = st.text_input("Введите код доступа", type="password")
 
