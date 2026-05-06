@@ -180,10 +180,10 @@ def verify_access_code(code):
             continue
 
         if row["status"] == "blocked":
-            return False, "Код доступа заблокирован."
+            return False, "Код доступа заблокирован.", False
 
         if row["type"] == "admin" and row["status"] == "active":
-            return True, "Административный доступ."
+            return True, "Административный доступ.", True
 
         if row["type"] == "client":
             if row["status"] == "new":
@@ -196,33 +196,36 @@ def verify_access_code(code):
 
                 save_access_codes(rows)
 
-                return True, f"Код активирован. Доступ действует до {expires_at.isoformat()}."
+                return True, f"Код активирован. Доступ действует до {expires_at.isoformat()}.", False
 
             if row["status"] == "active":
                 if not row["expires_at"]:
-                    return False, "Ошибка ключа: отсутствует дата окончания."
+                    return False, "Ошибка ключа: отсутствует дата окончания.", False
 
                 expires_at = datetime.fromisoformat(row["expires_at"]).date()
 
                 if today <= expires_at:
-                    return True, f"Доступ действует до {expires_at.isoformat()}."
+                    return True, f"Доступ действует до {expires_at.isoformat()}.", False
 
                 row["status"] = "expired"
                 save_access_codes(rows)
 
-                return False, "Срок действия ключа истёк."
+                return False, "Срок действия ключа истёк.", False
 
             if row["status"] == "expired":
-                return False, "Срок действия ключа истёк."
+                return False, "Срок действия ключа истёк.", False
 
-        return False, "Код доступа недействителен."
+        return False, "Код доступа недействителен.", False
 
-    return False, "Код доступа не найден."
+    return False, "Код доступа не найден.", False
 
 
 def check_access():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
+
+    if "is_admin" not in st.session_state:
+        st.session_state.is_admin = False
 
     if "access_message" not in st.session_state:
         st.session_state.access_message = ""
@@ -243,10 +246,11 @@ def check_access():
     access_code = st.text_input("Введите код доступа", type="password")
 
     if st.button("Войти"):
-        ok, message = verify_access_code(access_code)
+        ok, message, is_admin = verify_access_code(access_code)
 
         if ok:
             st.session_state.authenticated = True
+            st.session_state.is_admin = is_admin
             st.session_state.access_message = message
             st.rerun()
         else:
@@ -497,16 +501,17 @@ with right:
 # ADMIN / LOG
 # =====================================================
 
-with st.expander("Журнал прохождения"):
-    if LOG_FILE.exists():
-        rows = list(csv.DictReader(LOG_FILE.open("r", encoding="utf-8")))
-        st.dataframe(rows, use_container_width=True)
-    else:
-        st.write("Журнал пока пуст.")
+if st.session_state.get("is_admin", False):
+    with st.expander("Журнал прохождения"):
+        if LOG_FILE.exists():
+            rows = list(csv.DictReader(LOG_FILE.open("r", encoding="utf-8")))
+            st.dataframe(rows, use_container_width=True)
+        else:
+            st.write("Журнал пока пуст.")
 
-with st.expander("Коды доступа"):
-    if ACCESS_FILE.exists():
-        rows = load_access_codes()
-        st.dataframe(rows, use_container_width=True)
-    else:
-        st.write("Файл кодов доступа пока не создан.")
+    with st.expander("Коды доступа"):
+        if ACCESS_FILE.exists():
+            rows = load_access_codes()
+            st.dataframe(rows, use_container_width=True)
+        else:
+            st.write("Файл кодов доступа пока не создан.")
