@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import streamlit as st
@@ -15,12 +15,14 @@ st.set_page_config(
     layout="wide",
 )
 
-PASSWORD = "NEO-2026"
-
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 LOG_FILE = DATA_DIR / "session_log.csv"
+ACCESS_FILE = DATA_DIR / "access_codes.csv"
+
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+ACCESS_DAYS = 30
 
 
 # =====================================================
@@ -79,7 +81,7 @@ st.markdown(
     }
 
     .access-box {
-        max-width: 520px;
+        max-width: 560px;
         margin: 80px auto 0 auto;
         padding: 40px;
         border-radius: 28px;
@@ -95,7 +97,7 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.08);
     }
 
-    button[kind="primary"], .stButton > button {
+    .stButton > button {
         border-radius: 14px;
         padding: 0.65rem 1.2rem;
         border: 1px solid rgba(255,255,255,0.16);
@@ -120,12 +122,110 @@ st.markdown(
 
 
 # =====================================================
-# ACCESS
+# ACCESS CODES
 # =====================================================
 
-def check_password():
+def ensure_access_file():
+    if not ACCESS_FILE.exists():
+        with ACCESS_FILE.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=["code", "type", "activated_at", "expires_at", "status"],
+            )
+            writer.writeheader()
+            writer.writerow(
+                {
+                    "code": "NEO-ADMIN-2026",
+                    "type": "admin",
+                    "activated_at": "",
+                    "expires_at": "",
+                    "status": "active",
+                }
+            )
+            writer.writerow(
+                {
+                    "code": "NS-TEST-0001",
+                    "type": "client",
+                    "activated_at": "",
+                    "expires_at": "",
+                    "status": "new",
+                }
+            )
+
+
+def load_access_codes():
+    ensure_access_file()
+
+    with ACCESS_FILE.open("r", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def save_access_codes(rows):
+    with ACCESS_FILE.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["code", "type", "activated_at", "expires_at", "status"],
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def verify_access_code(code):
+    code = code.strip()
+    rows = load_access_codes()
+    today = datetime.now().date()
+
+    for row in rows:
+        if row["code"].strip() != code:
+            continue
+
+        if row["status"] == "blocked":
+            return False, "Код доступа заблокирован."
+
+        if row["type"] == "admin" and row["status"] == "active":
+            return True, "Административный доступ."
+
+        if row["type"] == "client":
+            if row["status"] == "new":
+                activated_at = today
+                expires_at = today + timedelta(days=ACCESS_DAYS)
+
+                row["activated_at"] = activated_at.isoformat()
+                row["expires_at"] = expires_at.isoformat()
+                row["status"] = "active"
+
+                save_access_codes(rows)
+
+                return True, f"Код активирован. Доступ действует до {expires_at.isoformat()}."
+
+            if row["status"] == "active":
+                if not row["expires_at"]:
+                    return False, "Ошибка ключа: отсутствует дата окончания."
+
+                expires_at = datetime.fromisoformat(row["expires_at"]).date()
+
+                if today <= expires_at:
+                    return True, f"Доступ действует до {expires_at.isoformat()}."
+
+                row["status"] = "expired"
+                save_access_codes(rows)
+
+                return False, "Срок действия ключа истёк."
+
+            if row["status"] == "expired":
+                return False, "Срок действия ключа истёк."
+
+        return False, "Код доступа недействителен."
+
+    return False, "Код доступа не найден."
+
+
+def check_access():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
+
+    if "access_message" not in st.session_state:
+        st.session_state.access_message = ""
 
     if st.session_state.authenticated:
         return True
@@ -140,19 +240,22 @@ def check_password():
         unsafe_allow_html=True,
     )
 
-    password = st.text_input("Введите код доступа", type="password")
+    access_code = st.text_input("Введите код доступа", type="password")
 
     if st.button("Войти"):
-        if password == PASSWORD:
+        ok, message = verify_access_code(access_code)
+
+        if ok:
             st.session_state.authenticated = True
+            st.session_state.access_message = message
             st.rerun()
         else:
-            st.error("Неверный код доступа")
+            st.error(message)
 
     return False
 
 
-if not check_password():
+if not check_access():
     st.stop()
 
 
@@ -307,6 +410,9 @@ def reset_protocol():
 st.markdown('<div class="main-title">NeoSphere</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Управляй состоянием. Управляй результатом.</div>', unsafe_allow_html=True)
 
+if st.session_state.access_message:
+    st.success(st.session_state.access_message)
+
 st.markdown(
     """
     <div class="hero-box">
@@ -388,7 +494,7 @@ with right:
 
 
 # =====================================================
-# LOG
+# ADMIN / LOG
 # =====================================================
 
 with st.expander("Журнал прохождения"):
@@ -397,3 +503,10 @@ with st.expander("Журнал прохождения"):
         st.dataframe(rows, use_container_width=True)
     else:
         st.write("Журнал пока пуст.")
+
+with st.expander("Коды доступа"):
+    if ACCESS_FILE.exists():
+        rows = load_access_codes()
+        st.dataframe(rows, use_container_width=True)
+    else:
+        st.write("Файл кодов доступа пока не создан.")
