@@ -23,7 +23,7 @@ ACCESS_FILE = DATA_DIR / "access_codes.csv"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ACCESS_DAYS = 30
-ACCESS_BUY_URL = "https://t.me/DenisBushko"
+ACCESS_BUY_URL = "https://t.me/NeoSphereSpace"
 
 
 # =====================================================
