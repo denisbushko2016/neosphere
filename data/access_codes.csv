@@ -2,3 +2,4 @@ code,type,activated_at,expires_at,status
 NEO-ADMIN-2026,admin,,,active
 NS-TEST-0001,client,,,new
 NS-6ANW-BKO7,client,,,new
+NS-SPUN-0NDW,client,,,new
