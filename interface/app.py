@@ -2,7 +2,9 @@ import csv
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import gspread
 import streamlit as st
+from google.oauth2.service_account import Credentials
 
 
 # =====================================================
@@ -18,12 +20,19 @@ st.set_page_config(
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 LOG_FILE = DATA_DIR / "session_log.csv"
-ACCESS_FILE = DATA_DIR / "access_codes.csv"
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ACCESS_DAYS = 30
 ACCESS_BUY_URL = "https://t.me/NeoSphereSpace"
+
+SPREADSHEET_ID = "1LesS6IvHdc96GW0K20Y-c9BHq4w17DjQAU5PwYX5CRQ"
+LOCAL_GOOGLE_KEY = ROOT / "secrets" / "neosphere-498412-2244886656a5.json"
+
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive",
+]
 
 
 # =====================================================
@@ -123,71 +132,94 @@ st.markdown(
 
 
 # =====================================================
-# ACCESS CODES
+# GOOGLE SHEETS ACCESS
 # =====================================================
 
-def ensure_access_file():
-    if not ACCESS_FILE.exists():
-        with ACCESS_FILE.open("w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=["code", "type", "activated_at", "expires_at", "status"],
-            )
-            writer.writeheader()
-            writer.writerow(
-                {
-                    "code": "NEO-ADMIN-2026",
-                    "type": "admin",
-                    "activated_at": "",
-                    "expires_at": "",
-                    "status": "active",
-                }
-            )
-            writer.writerow(
-                {
-                    "code": "NS-TEST-0001",
-                    "type": "client",
-                    "activated_at": "",
-                    "expires_at": "",
-                    "status": "new",
-                }
-            )
-
-
-def load_access_codes():
-    ensure_access_file()
-
-    with ACCESS_FILE.open("r", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def save_access_codes(rows):
-    with ACCESS_FILE.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=["code", "type", "activated_at", "expires_at", "status"],
+@st.cache_resource
+def get_sheet():
+    if "gcp_service_account" in st.secrets:
+        creds = Credentials.from_service_account_info(
+            dict(st.secrets["gcp_service_account"]),
+            scopes=SCOPES,
         )
-        writer.writeheader()
-        writer.writerows(rows)
+    else:
+        creds = Credentials.from_service_account_file(
+            str(LOCAL_GOOGLE_KEY),
+            scopes=SCOPES,
+        )
+
+    client = gspread.authorize(creds)
+    return client.open_by_key(SPREADSHEET_ID).sheet1
+
+
+def load_access_rows():
+    sheet = get_sheet()
+    values = sheet.get_all_values()
+
+    if not values:
+        return [], []
+
+    headers = values[0]
+    rows = []
+
+    for index, row_values in enumerate(values[1:], start=2):
+        row = {}
+        for i, header in enumerate(headers):
+            row[header] = row_values[i] if i < len(row_values) else ""
+        row["_row_number"] = index
+        rows.append(row)
+
+    return headers, rows
+
+
+def update_access_row(row_number, row_data, headers):
+    sheet = get_sheet()
+
+    values = []
+    for header in headers:
+        if header == "_row_number":
+            continue
+        values.append(row_data.get(header, ""))
+
+    end_col = chr(ord("A") + len(values) - 1)
+    sheet.update(f"A{row_number}:{end_col}{row_number}", [values])
 
 
 def verify_access_code(code):
     code = code.strip()
-    rows = load_access_codes()
+    headers, rows = load_access_rows()
     today = datetime.now().date()
 
+    required_headers = [
+        "code",
+        "type",
+        "activated_at",
+        "expires_at",
+        "status",
+        "email",
+        "payment_id",
+        "created_at",
+    ]
+
+    for h in required_headers:
+        if h not in headers:
+            return False, f"Ошибка базы доступа: отсутствует колонка {h}.", False
+
     for row in rows:
-        if row["code"].strip() != code:
+        if row.get("code", "").strip() != code:
             continue
 
-        if row["status"] == "blocked":
+        status = row.get("status", "").strip()
+        user_type = row.get("type", "").strip()
+
+        if status == "blocked":
             return False, "Код доступа заблокирован.", False
 
-        if row["type"] == "admin" and row["status"] == "active":
+        if user_type == "admin" and status == "active":
             return True, "Административный доступ.", True
 
-        if row["type"] == "client":
-            if row["status"] == "new":
+        if user_type == "client":
+            if status == "new":
                 activated_at = today
                 expires_at = today + timedelta(days=ACCESS_DAYS)
 
@@ -195,12 +227,12 @@ def verify_access_code(code):
                 row["expires_at"] = expires_at.isoformat()
                 row["status"] = "active"
 
-                save_access_codes(rows)
+                update_access_row(row["_row_number"], row, headers)
 
                 return True, f"Код активирован. Доступ действует до {expires_at.isoformat()}.", False
 
-            if row["status"] == "active":
-                if not row["expires_at"]:
+            if status == "active":
+                if not row.get("expires_at"):
                     return False, "Ошибка ключа: отсутствует дата окончания.", False
 
                 expires_at = datetime.fromisoformat(row["expires_at"]).date()
@@ -209,11 +241,11 @@ def verify_access_code(code):
                     return True, f"Доступ действует до {expires_at.isoformat()}.", False
 
                 row["status"] = "expired"
-                save_access_codes(rows)
+                update_access_row(row["_row_number"], row, headers)
 
                 return False, "Срок действия ключа истёк.", False
 
-            if row["status"] == "expired":
+            if status == "expired":
                 return False, "Срок действия ключа истёк.", False
 
         return False, "Код доступа недействителен.", False
@@ -517,8 +549,10 @@ if st.session_state.get("is_admin", False):
             st.write("Журнал пока пуст.")
 
     with st.expander("Коды доступа"):
-        if ACCESS_FILE.exists():
-            rows = load_access_codes()
-            st.dataframe(rows, use_container_width=True)
-        else:
-            st.write("Файл кодов доступа пока не создан.")
+        headers, rows = load_access_rows()
+        clean_rows = []
+        for row in rows:
+            clean = {k: v for k, v in row.items() if k != "_row_number"}
+            clean_rows.append(clean)
+
+        st.dataframe(clean_rows, use_container_width=True)
