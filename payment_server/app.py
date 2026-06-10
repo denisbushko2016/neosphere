@@ -26,7 +26,7 @@ YOOKASSA_SHOP_ID = os.environ.get("YOOKASSA_SHOP_ID")
 YOOKASSA_SECRET_KEY = os.environ.get("YOOKASSA_SECRET_KEY")
 RETURN_URL = os.environ.get("RETURN_URL", "https://neosphere.streamlit.app/")
 
-PRICE_VALUE = "21.00"
+PRICE_VALUE = "550.00"
 PRICE_CURRENCY = "RUB"
 
 SCOPES = [
