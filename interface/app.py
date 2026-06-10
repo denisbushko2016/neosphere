@@ -24,7 +24,7 @@ LOG_FILE = DATA_DIR / "session_log.csv"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ACCESS_DAYS = 30
-ACCESS_BUY_URL = "https://t.me/NeoSphereSpace"
+ACCESS_BUY_URL = "https://neosphere-payment.onrender.com/pay"
 
 SPREADSHEET_ID = "1LesS6IvHdc96GW0K20Y-c9BHq4w17DjQAU5PwYX5CRQ"
 LOCAL_GOOGLE_KEY = ROOT / "secrets" / "neosphere-498412-2244886656a5.json"
