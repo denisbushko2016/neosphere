@@ -113,6 +113,8 @@ def create_yookassa_payment(email=""):
         "Content-Type": "application/json",
     }
 
+    customer_email = email if email else "client@example.com"
+
     payload = {
         "amount": {
             "value": PRICE_VALUE,
@@ -126,11 +128,11 @@ def create_yookassa_payment(email=""):
         "description": "NeoSphere Access — цифровой доступ на 30 дней",
         "metadata": {
             "product": "neosphere_access_30_days",
-            "email": email,
+            "email": customer_email,
         },
         "receipt": {
             "customer": {
-                "email": email if email else "client@example.com",
+                "email": customer_email,
             },
             "items": [
                 {
@@ -169,6 +171,19 @@ def create_yookassa_payment(email=""):
 @app.route("/", methods=["GET"])
 def home():
     return "NeoSphere payment server is running"
+
+
+@app.route("/test-create-key", methods=["GET"])
+def test_create_key():
+    code = add_access_code(
+        email="test@neosphere.by",
+        payment_id="test_payment"
+    )
+
+    return jsonify({
+        "status": "success",
+        "access_code": code
+    }), 200
 
 
 @app.route("/create-payment", methods=["POST", "GET"])
