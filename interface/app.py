@@ -292,8 +292,6 @@ def check_access():
         st.info("Введите email для получения ключа доступа.")
 
     access_code = st.text_input("Введите код доступа", type="password")
-
-    access_code = st.text_input("Введите код доступа", type="password")
     if st.button("Войти"):
         ok, message, is_admin = verify_access_code(access_code)
 
