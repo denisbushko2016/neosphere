@@ -278,21 +278,20 @@ def check_access():
 
     st.write("Стоимость доступа: **21 BYN / 550 RUB**")
 
-email = st.text_input(
-    "Email для получения кода доступа",
-    placeholder="name@example.com"
-)
+    st.write("После оплаты персональный код доступа будет отправлен на указанный email.")
 
-if email:
-    payment_url = f"{ACCESS_BUY_URL}?email={email}"
-    st.link_button("Оплатить доступ", payment_url)
-
-access_code = st.text_input("Введите код доступа", type="password")
+    email = st.text_input(
+        "Email для получения кода доступа",
+        placeholder="name@example.com"
     )
 
     if email:
-    payment_url = f"{ACCESS_BUY_URL}?email={email}"
-    st.link_button("Оплатить доступ", payment_url)
+        payment_url = f"{ACCESS_BUY_URL}?email={email}"
+        st.link_button("Оплатить доступ", payment_url)
+    else:
+        st.info("Введите email для получения ключа доступа.")
+
+    access_code = st.text_input("Введите код доступа", type="password")
 
     access_code = st.text_input("Введите код доступа", type="password")
     if st.button("Войти"):
