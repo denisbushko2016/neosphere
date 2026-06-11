@@ -277,13 +277,19 @@ def check_access():
     )
 
     st.markdown("### Доступ на 30 дней")
-    st.write("Стоимость доступа: **$7**")
-    st.write("После оплаты вы получите персональный код доступа.")
+    st.write("Стоимость доступа: **21 BYN / 550 RUB**")
+    st.write("После оплаты вы получите персональный код доступа на указанный email.")
 
-    st.link_button("Получить доступ", ACCESS_BUY_URL)
+    email = st.text_input(
+    "Email для получения кода доступа",
+    placeholder="name@example.com"
+    )
+
+    if email:
+    payment_url = f"{ACCESS_BUY_URL}?email={email}"
+    st.link_button("Оплатить доступ", payment_url)
 
     access_code = st.text_input("Введите код доступа", type="password")
-
     if st.button("Войти"):
         ok, message, is_admin = verify_access_code(access_code)
 
