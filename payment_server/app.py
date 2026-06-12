@@ -313,18 +313,18 @@ def yookassa_webhook(secret):
     email = metadata.get("email", "")
 
     code = add_access_code(
-    email=email,
-    payment_id=payment_id,
-)
+        email=email,
+        payment_id=payment_id,
+    )
 
-email_sent = send_access_email(email, code)
+    email_sent = send_access_email(email, code)
 
-return jsonify({
-    "status": "success",
-    "access_code": code,
-    "payment_id": payment_id,
-    "email_sent": email_sent,
-}), 200
+    return jsonify({
+        "status": "success",
+        "access_code": code,
+        "payment_id": payment_id,
+        "email_sent": email_sent,
+    }), 200
 
 
 if __name__ == "__main__":
