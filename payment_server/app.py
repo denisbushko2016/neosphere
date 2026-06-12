@@ -5,6 +5,8 @@ import base64
 import secrets
 import string
 from datetime import datetime
+import smtplib
+from email.message import EmailMessage
 
 import requests
 from flask import Flask, request, jsonify
@@ -28,6 +30,11 @@ RETURN_URL = os.environ.get("RETURN_URL", "https://neosphere.streamlit.app/")
 
 PRICE_VALUE = "550.00"
 PRICE_CURRENCY = "RUB"
+BREVO_SMTP_SERVER = os.environ.get("BREVO_SMTP_SERVER", "smtp-relay.brevo.com")
+BREVO_SMTP_PORT = int(os.environ.get("BREVO_SMTP_PORT", "587"))
+BREVO_SMTP_LOGIN = os.environ.get("BREVO_SMTP_LOGIN")
+BREVO_SMTP_PASSWORD = os.environ.get("BREVO_SMTP_PASSWORD")
+EMAIL_FROM = os.environ.get("EMAIL_FROM", BREVO_SMTP_LOGIN)
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -92,6 +99,51 @@ def add_access_code(email="", payment_id=""):
     ])
 
     return code
+# =====================================================
+# EMAIL DELIVERY
+# =====================================================
+
+def send_access_email(email, code):
+    if not email:
+        print("No email provided, skipping email delivery")
+        return False
+
+    if not BREVO_SMTP_LOGIN or not BREVO_SMTP_PASSWORD:
+        raise RuntimeError("BREVO SMTP credentials are missing")
+
+    msg = EmailMessage()
+    msg["Subject"] = "Ваш код доступа NeoSphere"
+    msg["From"] = EMAIL_FROM
+    msg["To"] = email
+
+    msg.set_content(
+        f"""Здравствуйте!
+
+Ваш код доступа NeoSphere:
+
+{code}
+
+Сайт для входа:
+https://neosphere.streamlit.app/
+
+Срок действия:
+30 дней с момента первой активации.
+
+Рекомендации:
+— используйте наушники;
+— не используйте сессии при управлении транспортом или техникой;
+— при дискомфорте остановите сессию.
+
+NeoSphere
+"""
+    )
+
+    with smtplib.SMTP(BREVO_SMTP_SERVER, BREVO_SMTP_PORT) as server:
+        server.starttls()
+        server.login(BREVO_SMTP_LOGIN, BREVO_SMTP_PASSWORD)
+        server.send_message(msg)
+
+    return True
 
 
 # =====================================================
@@ -176,13 +228,13 @@ def home():
 @app.route("/test-create-key", methods=["GET"])
 def test_create_key():
     code = add_access_code(
-        email="test@neosphere.by",
-        payment_id="test_payment"
+        email="denisbushko2016@gmail.com",
+        payment_id="test_payment",
     )
 
     return jsonify({
         "status": "success",
-        "access_code": code
+        "access_code": code,
     }), 200
 
 
