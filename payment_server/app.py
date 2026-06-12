@@ -226,15 +226,29 @@ def home():
 
 
 @app.route("/test-create-key", methods=["GET"])
+
 def test_create_key():
+
+    test_email = "denisbushko2016@gmail.com"
+
     code = add_access_code(
-        email="denisbushko2016@gmail.com",
+
+        email=test_email,
+
         payment_id="test_payment",
+
     )
 
+    email_sent = send_access_email(test_email, code)
+
     return jsonify({
+
         "status": "success",
+
         "access_code": code,
+
+        "email_sent": email_sent,
+
     }), 200
 
 
@@ -299,15 +313,18 @@ def yookassa_webhook(secret):
     email = metadata.get("email", "")
 
     code = add_access_code(
-        email=email,
-        payment_id=payment_id,
-    )
+    email=email,
+    payment_id=payment_id,
+)
 
-    return jsonify({
-        "status": "success",
-        "access_code": code,
-        "payment_id": payment_id,
-    }), 200
+email_sent = send_access_email(email, code)
+
+return jsonify({
+    "status": "success",
+    "access_code": code,
+    "payment_id": payment_id,
+    "email_sent": email_sent,
+}), 200
 
 
 if __name__ == "__main__":
