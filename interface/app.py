@@ -185,18 +185,16 @@ def update_access_row(row_number, row_data, headers):
     sheet.update(f"A{row_number}:{end_col}{row_number}", [values])
 
 
-def verify_access_code(code):
-    code = code.strip()
+def verify_email_access(email):
+    email = email.strip().lower()
     headers, rows = load_access_rows()
     today = datetime.now().date()
 
     required_headers = [
-        "code",
-        "type",
+        "email",
+        "status",
         "activated_at",
         "expires_at",
-        "status",
-        "email",
         "payment_id",
         "created_at",
     ]
@@ -206,52 +204,29 @@ def verify_access_code(code):
             return False, f"Ошибка базы доступа: отсутствует колонка {h}.", False
 
     for row in rows:
-        if row.get("code", "").strip() != code:
+        row_email = row.get("email", "").strip().lower()
+
+        if row_email != email:
             continue
 
         status = row.get("status", "").strip()
-        user_type = row.get("type", "").strip()
 
-        if status == "blocked":
-            return False, "Код доступа заблокирован.", False
+        if status != "active":
+            return False, "Доступ не активирован.", False
 
-        if user_type == "admin" and status == "active":
-            return True, "Административный доступ.", True
+        expires_at_str = row.get("expires_at", "").strip()
 
-        if user_type == "client":
-            if status == "new":
-                activated_at = today
-                expires_at = today + timedelta(days=ACCESS_DAYS)
+        if not expires_at_str:
+            return False, "Не указана дата окончания доступа.", False
 
-                row["activated_at"] = activated_at.isoformat()
-                row["expires_at"] = expires_at.isoformat()
-                row["status"] = "active"
+        expires_at = datetime.fromisoformat(expires_at_str).date()
 
-                update_access_row(row["_row_number"], row, headers)
+        if today <= expires_at:
+            return True, f"Доступ действует до {expires_at.isoformat()}.", False
 
-                return True, f"Код активирован. Доступ действует до {expires_at.isoformat()}.", False
+        return False, "Срок доступа истёк.", False
 
-            if status == "active":
-                if not row.get("expires_at"):
-                    return False, "Ошибка ключа: отсутствует дата окончания.", False
-
-                expires_at = datetime.fromisoformat(row["expires_at"]).date()
-
-                if today <= expires_at:
-                    return True, f"Доступ действует до {expires_at.isoformat()}.", False
-
-                row["status"] = "expired"
-                update_access_row(row["_row_number"], row, headers)
-
-                return False, "Срок действия ключа истёк.", False
-
-            if status == "expired":
-                return False, "Срок действия ключа истёк.", False
-
-        return False, "Код доступа недействителен.", False
-
-    return False, "Код доступа не найден.", False
-
+    return False, "Email не найден.", False
 
 def check_access():
     if "authenticated" not in st.session_state:
@@ -278,10 +253,10 @@ def check_access():
 
     st.write("Стоимость доступа: **21 BYN / 550 RUB**")
 
-    st.write("После оплаты персональный код доступа будет отправлен на указанный email.")
+    st.write("Введите email, который использовался при оплате доступа.")
 
     email = st.text_input(
-        "Email для получения кода доступа",
+        "Email",
         placeholder="name@example.com"
     )
 
@@ -289,12 +264,10 @@ def check_access():
         payment_url = f"{ACCESS_BUY_URL}?email={email}"
         st.link_button("Оплатить доступ", payment_url)
     else:
-        st.info("Введите email для получения ключа доступа.")
+        st.info("Введите email.")
 
-    access_code = st.text_input("Введите код доступа", type="password")
     if st.button("Войти"):
-        ok, message, is_admin = verify_access_code(access_code)
-
+        ok, message, is_admin = verify_email_access(email)
         if ok:
             st.session_state.authenticated = True
             st.session_state.is_admin = is_admin
