@@ -253,10 +253,16 @@ def check_access():
 
     st.write("Стоимость доступа: **21 BYN / 550 RUB**")
 
-    st.write("Введите email, который использовался при оплате доступа.")
+    st.write(
+        """
+        Введите email для регистрации в NeoSphere.
+
+        После оплаты доступ будет активирован автоматически.
+        """
+    )
 
     email = st.text_input(
-        "Email",
+        "Email для регистрации в NeoSphere",
         placeholder="name@example.com"
     )
 
@@ -264,10 +270,13 @@ def check_access():
         payment_url = f"{ACCESS_BUY_URL}?email={email}"
         st.link_button("Оплатить доступ", payment_url)
     else:
-        st.info("Введите email.")
+        st.info(
+            "Укажите email для регистрации и последующего входа в NeoSphere."
+        )
 
     if st.button("Войти"):
         ok, message, is_admin = verify_email_access(email)
+
         if ok:
             st.session_state.authenticated = True
             st.session_state.is_admin = is_admin
@@ -277,7 +286,6 @@ def check_access():
             st.error(message)
 
     return False
-
 
 if not check_access():
     st.stop()
